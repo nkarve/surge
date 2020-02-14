@@ -2,9 +2,11 @@
 #include "tables.h"
 #include <sstream>
 
-
+//Zobrist keys for each piece and each square
+//Used to incrementally update the hash key of a position
 uint64_t zobrist::zobrist_table[NPIECES][NSQUARES];
 
+//Initializes the zobrist table with random 64-bit numbers
 void zobrist::initialise_zobrist_keys() {
 	PRNG rng(70026072);
 	for (int i = 0; i < NPIECES; i++)
@@ -12,6 +14,7 @@ void zobrist::initialise_zobrist_keys() {
 			zobrist::zobrist_table[i][j] = rng.rand<uint64_t>();
 }
 
+//Pretty-prints the position (including FEN and hash key)
 std::ostream& operator<< (std::ostream& os, const Position& p) {
 	const char* s = "   +---+---+---+---+---+---+---+---+\n";
 	const char* t = "     A   B   C   D   E   F   G   H\n";
@@ -31,6 +34,7 @@ std::ostream& operator<< (std::ostream& os, const Position& p) {
 	return os;
 }
 
+//Returns the FEN (Forsyth-Edwards Notation) representation of the position
 std::string Position::fen() const {
 	std::ostringstream fen;
 	int empty;
@@ -62,6 +66,7 @@ std::string Position::fen() const {
 	return fen.str();
 }
 
+//Updates a position according to an FEN string
 void Position::set(const std::string& fen, Position& p) {
 	int square = a8;
 	for (char ch : fen.substr(0, fen.find(' '))) {
@@ -99,8 +104,7 @@ void Position::set(const std::string& fen, Position& p) {
 }
 	
 
-
-
+//Moves a piece to a (possibly empty) square on the board and updates the hash
 void Position::move_piece(Square from, Square to) {
 	hash ^= zobrist::zobrist_table[board[from]][from] ^ zobrist::zobrist_table[board[from]][to]
 		^ zobrist::zobrist_table[board[to]][to];
@@ -111,6 +115,7 @@ void Position::move_piece(Square from, Square to) {
 	board[from] = NO_PIECE;
 }
 
+//Moves a piece to an empty square. Note that it is an error if the <to> square contains a piece
 void Position::move_piece_quiet(Square from, Square to) {
 	hash ^= zobrist::zobrist_table[board[from]][from] ^ zobrist::zobrist_table[board[from]][to];
 	piece_bb[board[from]] ^= (SQUARE_BB[from] | SQUARE_BB[to]);
