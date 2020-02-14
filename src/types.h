@@ -12,6 +12,7 @@ enum Color : int {
 	WHITE, BLACK
 };
 
+//Inverts the color (WHITE -> BLACK) and (BLACK -> WHITE)
 constexpr Color operator~(Color c) {
 	return Color(c ^ BLACK);
 }
@@ -28,10 +29,16 @@ enum PieceType : int {
 	PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING
 };
 
-
+//PIECE_STR[piece] is the algebraic chess representation of that piece
 const std::string PIECE_STR = "PNBRQK~>pnbrqk.";
+
+//The FEN of the starting position
 const std::string DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq";
+
+//The Kiwipete position, used for perft debugging
 const std::string KIWIPETE = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w -";
+
+
 const size_t NPIECES = 15;
 enum Piece : int {
 	WHITE_PAWN, WHITE_KNIGHT, WHITE_BISHOP, WHITE_ROOK, WHITE_QUEEN, WHITE_KING,
@@ -111,7 +118,7 @@ constexpr int diagonal_of(Square s) { return 7 + rank_of(s) - file_of(s); }
 constexpr int anti_diagonal_of(Square s) { return rank_of(s) + file_of(s); }
 constexpr Square create_square(File f, Rank r) { return Square(r << 3 | f); }
 
-
+//Shifts a bitboard in a particular direction. There is no wrapping, so bits that are shifted of the edge are lost 
 template<Direction D>
 constexpr Bitboard shift(Bitboard b) {
 	return D == NORTH ? b << 8 : D == SOUTH ? b >> 8
@@ -124,16 +131,19 @@ constexpr Bitboard shift(Bitboard b) {
 		: 0;	
 }
 
+//Returns the actual rank from a given side's perspective (e.g. rank 1 is rank 8 from Black's perspective)
 template<Color C>
 constexpr Rank relative_rank(Rank r) {
 	return C == WHITE ? r : Rank(RANK8 - r);
 }
 
+//Returns the actual direction from a given side's perspective (e.g. North is South from Black's perspective)
 template<Color C>
 constexpr Direction relative_dir(Direction d) {
 	return Direction(C == WHITE ? d : -d);
 }
 
+//The type of the move
 enum MoveFlags : int {
 	QUIET = 0b0000, DOUBLE_PUSH = 0b0001,
 	OO = 0b0010, OOO = 0b0011,
@@ -146,11 +156,13 @@ enum MoveFlags : int {
 	PC_KNIGHT = 0b1100, PC_BISHOP = 0b1101, PC_ROOK = 0b1110, PC_QUEEN = 0b1111,
 };
 
+
 class Move {
 private:
+	//The internal representation of the move
 	uint16_t move;
-
 public:
+	//Defaults to a null move (a1a1)
 	inline Move() : move(0) {}
 	
 	inline Move(uint16_t m) { move = m; }
@@ -182,12 +194,14 @@ public:
 	bool operator!=(Move a) const { return to_from() != a.to_from(); }
 };
 
+//Adds, to the move pointer all moves of the form (from, s), where s is a square in the bitboard to
 template<MoveFlags F = QUIET>
 inline Move *make(Square from, Bitboard to, Move *list) {
 	while (to) *list++ = Move(from, pop_lsb(&to), F);
 	return list;
 }
 
+//Adds, to the move pointer all quiet promotion moves of the form (from, s), where s is a square in the bitboard to
 template<>
 inline Move *make<PROMOTIONS>(Square from, Bitboard to, Move *list) {
 	Square p;
@@ -201,6 +215,7 @@ inline Move *make<PROMOTIONS>(Square from, Bitboard to, Move *list) {
 	return list;
 }
 
+//Adds, to the move pointer all capture promotion moves of the form (from, s), where s is a square in the bitboard to
 template<>
 inline Move* make<PROMOTION_CAPTURES>(Square from, Bitboard to, Move* list) {
 	Square p;
@@ -216,16 +231,26 @@ inline Move* make<PROMOTION_CAPTURES>(Square from, Bitboard to, Move* list) {
 
 extern std::ostream& operator<<(std::ostream& os, const Move& m);
 
+//The white king and kingside rook
 const Bitboard WHITE_OO_MASK = 0x90;
+//The white king and queenside rook
 const Bitboard WHITE_OOO_MASK = 0x11;
+
+//Squares between the white king and kingside rook
 const Bitboard WHITE_OO_BLOCKERS_AND_ATTACKERS_MASK = 0x60;
+//Squares between the white king and queenside rook
 const Bitboard WHITE_OOO_BLOCKERS_AND_ATTACKERS_MASK = 0xe;
 
+//The black king and kingside rook
 const Bitboard BLACK_OO_MASK = 0x9000000000000000;
+//The black king and queenside rook
 const Bitboard BLACK_OOO_MASK = 0x1100000000000000;
+//Squares between the black king and kingside rook
 const Bitboard BLACK_OO_BLOCKERS_AND_ATTACKERS_MASK = 0x6000000000000000;
+//Squares between the black king and queenside rook
 const Bitboard BLACK_OOO_BLOCKERS_AND_ATTACKERS_MASK = 0xE00000000000000;
 
+//The white king, white rooks, black king and black rooks
 const Bitboard ALL_CASTLING_MASK = 0x9100000000000091;
 
 template<Color C> constexpr Bitboard oo_mask() { return C == WHITE ? WHITE_OO_MASK : BLACK_OO_MASK; }

@@ -2,11 +2,9 @@
 #include "types.h"
 #include <iostream>
 
-//Generated from a Java initialiser
+//All piece tables are generated from a program written in Java
 
-//Contains a square-wise database of the move bitboard for Kings, Knights
-//and pawns of both colours
-
+//A lookup table for king move bitboards
 const Bitboard KING_ATTACKS[64] = {
 	0x302, 0x705, 0xe0a, 0x1c14,
 	0x3828, 0x7050, 0xe0a0, 0xc040,
@@ -26,6 +24,7 @@ const Bitboard KING_ATTACKS[64] = {
 	0x2838000000000000, 0x5070000000000000, 0xa0e0000000000000, 0x40c0000000000000,
 };
 
+//A lookup table for knight move bitboards
 const Bitboard KNIGHT_ATTACKS[64] = {
 	0x20400, 0x50800, 0xa1100, 0x142200,
 	0x284400, 0x508800, 0xa01000, 0x402000,
@@ -45,6 +44,7 @@ const Bitboard KNIGHT_ATTACKS[64] = {
 	0x44280000000000, 0x0088500000000000, 0x0010a00000000000, 0x20400000000000
 };
 
+//A lookup table for white pawn move bitboards
 const Bitboard WHITE_PAWN_ATTACKS[64] = {
 	0x200, 0x500, 0xa00, 0x1400,
 	0x2800, 0x5000, 0xa000, 0x4000,
@@ -64,6 +64,7 @@ const Bitboard WHITE_PAWN_ATTACKS[64] = {
 	0x0, 0x0, 0x0, 0x0,
 };
 
+//A lookup table for black pawn move bitboards
 const Bitboard BLACK_PAWN_ATTACKS[64] = {
 	0x0, 0x0, 0x0, 0x0,
 	0x0, 0x0, 0x0, 0x0,
@@ -103,7 +104,8 @@ Bitboard sliding_attacks(Square square, Bitboard occ, Bitboard mask) {
 		reverse(reverse(mask & occ) - reverse(SQUARE_BB[square]) * 2)) & mask;
 }
 
-//Rook Attacks
+//Returns rook attacks from a given square, using the Hyperbola Quintessence Algorithm. Only used to initialize
+//the magic lookup table
 Bitboard get_rook_attacks_for_init(Square square, Bitboard occ) {
 	return sliding_attacks(square, occ, MASK_FILE[file_of(square)]) |
 		sliding_attacks(square, occ, MASK_RANK[rank_of(square)]);
@@ -132,7 +134,7 @@ const Bitboard ROOK_MAGICS[64] = {
 	0x0001000204080011, 0x0001000204000801, 0x0001000082000401, 0x0001FFFAABFAD1A2
 };
 
-
+//Initializes the magic lookup table for rooks
 void initialise_rook_attacks() {
 	Bitboard edges, subset, index;
 
@@ -154,18 +156,22 @@ void initialise_rook_attacks() {
 	}
 }
 
+//Returns the attacks bitboard for a rook at a given square, using the magic lookup table
 constexpr Bitboard get_rook_attacks(Square square, Bitboard occ) {
 	return ROOK_ATTACKS[square][((occ & ROOK_ATTACK_MASKS[square]) * ROOK_MAGICS[square])
 		>> ROOK_ATTACK_SHIFTS[square]];
 }
 
+//Returns the 'x-ray attacks' for a rook at a given square. X-ray attacks cover squares that are not immediately
+//accessible by the rook, but become available when the immediate blockers are removed from the board 
 Bitboard get_xray_rook_attacks(Square square, Bitboard occ, Bitboard blockers) {
 	Bitboard attacks = get_rook_attacks(square, occ);
 	blockers &= attacks;
 	return attacks ^ get_rook_attacks(square, occ ^ blockers);
 }
 
-//Bishop Attacks
+//Returns bishop attacks from a given square, using the Hyperbola Quintessence Algorithm. Only used to initialize
+//the magic lookup table
 Bitboard get_bishop_attacks_for_init(Square square, Bitboard occ) {
 	return sliding_attacks(square, occ, MASK_DIAGONAL[diagonal_of(square)]) |
 		sliding_attacks(square, occ, MASK_ANTI_DIAGONAL[anti_diagonal_of(square)]);
@@ -194,7 +200,7 @@ const Bitboard BISHOP_MAGICS[64] = {
 	0x0000000010020200, 0x0000000404080200, 0x0000040404040400, 0x0002020202020200
 };
 
-
+//Initializes the magic lookup table for bishops
 void initialise_bishop_attacks() {
 	Bitboard edges, subset, index;
 
@@ -216,19 +222,25 @@ void initialise_bishop_attacks() {
 	}
 }
 
+//Returns the attacks bitboard for a bishop at a given square, using the magic lookup table
 constexpr Bitboard get_bishop_attacks(Square square, Bitboard occ) {
 	return BISHOP_ATTACKS[square][((occ & BISHOP_ATTACK_MASKS[square]) * BISHOP_MAGICS[square])
 		>> BISHOP_ATTACK_SHIFTS[square]];
 }
 
+//Returns the 'x-ray attacks' for a bishop at a given square. X-ray attacks cover squares that are not immediately
+//accessible by the rook, but become available when the immediate blockers are removed from the board 
 Bitboard get_xray_bishop_attacks(Square square, Bitboard occ, Bitboard blockers) {
 	Bitboard attacks = get_bishop_attacks(square, occ);
 	blockers &= attacks;
 	return attacks ^ get_bishop_attacks(square, occ ^ blockers);
 }
 
+
 Bitboard SQUARES_BETWEEN_BB[64][64];
 
+//Initializes the lookup table for the bitboard of squares in between two given squares (0 if the 
+//two squares are not aligned)
 void initialise_squares_between() {
 	Bitboard sqs;
 	for (Square sq1 = a1; sq1 <= h8; ++sq1)
@@ -243,8 +255,11 @@ void initialise_squares_between() {
 		}
 }
 
+
 Bitboard LINE[64][64];
 
+//Initializes the lookup table for the bitboard of all squares along the line of two given squares (0 if the 
+//two squares are not aligned)
 void initialise_line() {
 	for (Square sq1 = a1; sq1 <= h8; ++sq1)
 		for (Square sq2 = a1; sq2 <= h8; ++sq2) {
@@ -259,8 +274,12 @@ void initialise_line() {
 		}
 }
 
+
 Bitboard PAWN_ATTACKS[NCOLORS][NSQUARES];
 Bitboard PSEUDO_LEGAL_ATTACKS[NPIECE_TYPES][NSQUARES];
+
+//Initializes the table containg pseudolegal attacks of each piece for each square. This does not include blockers
+//for sliding pieces
 void initialise_pseudo_legal() {
 	memcpy(PAWN_ATTACKS[WHITE], WHITE_PAWN_ATTACKS, sizeof(WHITE_PAWN_ATTACKS));
 	memcpy(PAWN_ATTACKS[BLACK], BLACK_PAWN_ATTACKS, sizeof(BLACK_PAWN_ATTACKS));
@@ -274,6 +293,7 @@ void initialise_pseudo_legal() {
 	}
 }
 
+//Initializes lookup tables for rook moves, bishop moves, in-between squares, aligned squares and pseudolegal moves
 void initialise_all_databases() {
 	initialise_rook_attacks();
 	initialise_bishop_attacks();
