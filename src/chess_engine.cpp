@@ -6,7 +6,10 @@
 #include "search.h"
 
 
-
+//Computes the perft of the position for a given depth, using bulk-counting
+//According to the https://www.chessprogramming.org/Perft site:
+//Perft is a debugging function to walk the move generation tree of strictly legal moves to count 
+//all the leaf nodes of a certain depth, which can be compared to predetermined values and used to isolate bugs
 template<Color Us>
 unsigned long long perft(Position& p, unsigned int depth) {
 	int nmoves;
@@ -25,6 +28,8 @@ unsigned long long perft(Position& p, unsigned int depth) {
 	return nodes;
 }
 
+//A variant of perft, listing all moves and for each move, the perft of the decremented depth
+//It is used solely for debugging
 template<Color Us>
 void perftdiv(Position& p, unsigned int depth) {
 	unsigned long long nodes = 0, pf;
@@ -63,6 +68,9 @@ void test_perft() {
 }
 
 int main() {
+	//Make sure to initialise all databases before using the library!
 	initialise_all_databases();
 	zobrist::initialise_zobrist_keys();
+	
+	return 0;
 }
