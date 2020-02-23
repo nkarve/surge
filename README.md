@@ -4,7 +4,7 @@
 * Magic Bitboard sliding attacks and pre-generated attack tables
 * Make-Unmake position class
 * 16-bit Move representation
-* Extremely fast bulk-counted perft (over 180,000,000 NPS)
+* Extremely fast bulk-counted perft (over 180,000,000 NPS, single-threaded, without hashtable)
 * Simple design for use in any chess engine
 
 ### perft(6) from starting position:
