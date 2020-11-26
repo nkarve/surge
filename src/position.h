@@ -491,7 +491,8 @@ Move* Position::generate_legals(Move* list) {
 
 		if (history[game_ply].epsq != NO_SQUARE) {
 			//b1 contains our pawns that can perform an e.p. capture
-			b1 = pawn_attacks<Them>(history[game_ply].epsq) & bitboard_of(Us, PAWN) & not_pinned;
+			b2 = pawn_attacks<Them>(history[game_ply].epsq) & bitboard_of(Us, PAWN);
+			b1 = b2 & not_pinned;
 			while (b1) {
 				s = pop_lsb(&b1);
 				
@@ -517,6 +518,12 @@ Move* Position::generate_legals(Move* list) {
 					MASK_RANK[rank_of(our_king)]) &
 					their_orth_sliders) == 0)
 						*list++ = Move(s, history[game_ply].epsq, EN_PASSANT);
+			}
+			
+			//Pinned pawns can only capture e.p. if they are pinned diagonally and the e.p. square is in line with the king 
+			b1 = b2 & pinned & LINE[history[game_ply].epsq][our_king];
+			if (b1) {
+				*list++ = Move(bsf(b1), history[game_ply].epsq, EN_PASSANT);
 			}
 		}
 
