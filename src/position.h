@@ -409,7 +409,7 @@ Move* Position::generate_legals(Move* list) {
 
 	//The capture mask filters destination squares to those that contain an enemy piece that is checking the 
 	//king and must be captured
-	Bitboard capture_mask
+	Bitboard capture_mask;
 	
 	//The quiet mask filter destination squares to those where pieces must be moved to block an incoming attack 
 	//to the king
