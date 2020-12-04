@@ -83,7 +83,8 @@ const Bitboard k4 = 0x0f0f0f0f0f0f0f0f;
 const Bitboard kf = 0x0101010101010101;
 
 //Returns number of set bits in the bitboard
-inline int pop_count(Bitboard x) {
+//gk inline int pop_count(Bitboard x) {
+int pop_count(Bitboard x) {
 	x = x - ((x >> 1) & k1);
 	x = (x & k2) + ((x >> 2) & k2);
 	x = (x + (x >> 4)) & k4;
@@ -92,7 +93,8 @@ inline int pop_count(Bitboard x) {
 }
 
 //Returns number of set bits in the bitboard. Faster than pop_count(x) when the bitboard has few set bits
-inline int sparse_pop_count(Bitboard x) {
+//gk inline int sparse_pop_count(Bitboard x) {
+int sparse_pop_count(Bitboard x) {
 	int count = 0;
 	while (x) {
 		count++;
@@ -116,7 +118,8 @@ constexpr int DEBRUIJN64[64] = {
 const Bitboard MAGIC = 0x03f79d71b4cb0a89;
 
 //Returns the index of the least significant bit in the bitboard
-constexpr Square bsf(Bitboard b) {
+//constexpr Square bsf(Bitboard b) {
+Square bsf(Bitboard b) {
 	return Square(DEBRUIJN64[MAGIC * (b ^ (b - 1)) >> 58]);
 }
 

@@ -11,7 +11,7 @@
 //all the leaf nodes of a certain depth, which can be compared to predetermined values and used to isolate bugs
 template<Color Us>
 unsigned long long perft(Position& p, unsigned int depth) {
-	int nmoves;
+	//gk int nmoves;
 	unsigned long long nodes = 0;
 
 	MoveList<Us> list(p);
@@ -70,6 +70,9 @@ int main() {
 	//Make sure to initialise all databases before using the library!
 	initialise_all_databases();
 	zobrist::initialise_zobrist_keys();
+
+	//gk call test_perft()
+	test_perft();
 	
 	return 0;
 }

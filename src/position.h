@@ -85,8 +85,11 @@ public:
 	Bitboard pinned;
 	
 	
-	Position() : piece_bb{ 0 }, side_to_play(WHITE), game_ply(0), board{}, 
-		hash(0), pinned(0), checkers(0) {
+//gk adapted order of initialization
+//gk	Position() : piece_bb{ 0 }, side_to_play(WHITE), game_ply(0), board{}, 
+//gk		hash(0), pinned(0), checkers(0) {
+	Position() : piece_bb{ 0 }, board{}, side_to_play(WHITE), game_ply(0),
+		hash(0), checkers(0), pinned(0) {
 		
 		//Sets all squares on the board as empty
 		for (int i = 0; i < 64; i++) board[i] = NO_PIECE;
@@ -421,13 +424,15 @@ Move* Position::generate_legals(Move* list) {
 	//Checkers of each piece type are identified by:
 	//1. Projecting attacks FROM the king square
 	//2. Intersecting this bitboard with the enemy bitboard of that piece type
-	checkers = attacks<KNIGHT>(our_king, all) & bitboard_of(Them, KNIGHT)
-		| pawn_attacks<Us>(our_king) & bitboard_of(Them, PAWN);
+	//gk additional parentheses
+	checkers = (attacks<KNIGHT>(our_king, all) & bitboard_of(Them, KNIGHT))
+		| (pawn_attacks<Us>(our_king) & bitboard_of(Them, PAWN));
 	
 	//Here, we identify slider checkers and pinners simultaneously, and candidates for such pinners 
 	//and checkers are represented by the bitboard <candidates>
-	Bitboard candidates = attacks<ROOK>(our_king, them_bb) & their_orth_sliders
-		| attacks<BISHOP>(our_king, them_bb) & their_diag_sliders;
+	//gk additional parentheses
+	Bitboard candidates = (attacks<ROOK>(our_king, them_bb) & their_orth_sliders)
+		| (attacks<BISHOP>(our_king, them_bb) & their_diag_sliders);
 
 	pinned = 0;
 	while (candidates) {
@@ -438,7 +443,8 @@ Move* Position::generate_legals(Move* list) {
 		//If not, add the slider to the checker bitboard
 		if (b1 == 0) checkers ^= SQUARE_BB[s];
 		//If there is only one of our pieces between them, add our piece to the pinned bitboard 
-		else if ((b1 & b1 - 1) == 0) pinned ^= b1;
+		//gk additional parentheses
+		else if ((b1 & (b1 - 1)) == 0) pinned ^= b1;
 	}
 
 	//This makes it easier to mask pieces
