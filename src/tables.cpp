@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstring>	//gk memcpy() 
 
+namespace surge {
+
 //All piece tables are generated from a program written in Java
 
 //A lookup table for king move bitboards
@@ -307,3 +309,5 @@ void initialise_all_databases() {
 	initialise_line();
 	initialise_pseudo_legal();
 }
+
+} // namespace surge

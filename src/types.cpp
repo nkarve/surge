@@ -1,6 +1,8 @@
 #include "types.h"
 #include <iostream>
 
+namespace surge { 
+
 //Lookup tables of square names in algebraic chess notation
 const char* SQSTR[65] = {
 	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
@@ -145,3 +147,4 @@ std::ostream& operator<<(std::ostream& os, const Move& m) {
 	return os;
 }
 
+} // namespace surge

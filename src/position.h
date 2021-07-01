@@ -6,6 +6,8 @@
 #include "tables.h"
 #include <utility>
 
+namespace surge {
+
 //A psuedorandom number generator
 //Source: Stockfish
 class PRNG {
@@ -704,3 +706,5 @@ private:
 	Move list[218];
 	Move *last;
 };
+
+} // namespace surge

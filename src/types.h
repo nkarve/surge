@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 
+namespace surge {
+
 const size_t NCOLORS = 2;
 enum Color : int {
 	WHITE, BLACK
@@ -273,3 +275,5 @@ constexpr Bitboard ooo_blockers_mask() {
 }
 	
 template<Color C> constexpr Bitboard ignore_ooo_danger() { return C == WHITE ? 0x2 : 0x200000000000000; }
+
+} // namespace surge
