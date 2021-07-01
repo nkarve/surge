@@ -1,6 +1,7 @@
 #include "tables.h"
 #include "types.h"
 #include <iostream>
+#include <cstring>	//gk memcpy() 
 
 //All piece tables are generated from a program written in Java
 
@@ -88,10 +89,11 @@ const Bitboard BLACK_PAWN_ATTACKS[64] = {
 
 //Reverses a bitboard                        
 Bitboard reverse(Bitboard b) {
-	b = (b & 0x5555555555555555) << 1 | (b >> 1) & 0x5555555555555555;
-	b = (b & 0x3333333333333333) << 2 | (b >> 2) & 0x3333333333333333;
-	b = (b & 0x0f0f0f0f0f0f0f0f) << 4 | (b >> 4) & 0x0f0f0f0f0f0f0f0f;
-	b = (b & 0x00ff00ff00ff00ff) << 8 | (b >> 8) & 0x00ff00ff00ff00ff;
+	//gk additional parentheses around arithmetic in operand of ‘|’
+	b = (b & 0x5555555555555555) << 1 | ((b >> 1) & 0x5555555555555555);
+	b = (b & 0x3333333333333333) << 2 | ((b >> 2) & 0x3333333333333333);
+	b = (b & 0x0f0f0f0f0f0f0f0f) << 4 | ((b >> 4) & 0x0f0f0f0f0f0f0f0f);
+	b = (b & 0x00ff00ff00ff00ff) << 8 | ((b >> 8) & 0x00ff00ff00ff00ff);
 
 	return (b << 48) | ((b & 0xffff0000) << 16) |
 		((b >> 16) & 0xffff0000) | (b >> 48);
@@ -157,7 +159,8 @@ void initialise_rook_attacks() {
 }
 
 //Returns the attacks bitboard for a rook at a given square, using the magic lookup table
-constexpr Bitboard get_rook_attacks(Square square, Bitboard occ) {
+//gk constexpr Bitboard get_rook_attacks(Square square, Bitboard occ) {
+Bitboard get_rook_attacks(Square square, Bitboard occ) {
 	return ROOK_ATTACKS[square][((occ & ROOK_ATTACK_MASKS[square]) * ROOK_MAGICS[square])
 		>> ROOK_ATTACK_SHIFTS[square]];
 }
@@ -223,7 +226,8 @@ void initialise_bishop_attacks() {
 }
 
 //Returns the attacks bitboard for a bishop at a given square, using the magic lookup table
-constexpr Bitboard get_bishop_attacks(Square square, Bitboard occ) {
+//gk constexpr Bitboard get_bishop_attacks(Square square, Bitboard occ) {
+Bitboard get_bishop_attacks(Square square, Bitboard occ) {
 	return BISHOP_ATTACKS[square][((occ & BISHOP_ATTACK_MASKS[square]) * BISHOP_MAGICS[square])
 		>> BISHOP_ATTACK_SHIFTS[square]];
 }
@@ -265,11 +269,13 @@ void initialise_line() {
 		for (Square sq2 = a1; sq2 <= h8; ++sq2) {
 			if (file_of(sq1) == file_of(sq2) || rank_of(sq1) == rank_of(sq2))
 				LINE[sq1][sq2] =
-				get_rook_attacks_for_init(sq1, 0) & get_rook_attacks_for_init(sq2, 0)
+				//gk additional parentheses
+				(get_rook_attacks_for_init(sq1, 0) & get_rook_attacks_for_init(sq2, 0))
 				| SQUARE_BB[sq1] | SQUARE_BB[sq2];
 			else if (diagonal_of(sq1) == diagonal_of(sq2) || anti_diagonal_of(sq1) == anti_diagonal_of(sq2))
 				LINE[sq1][sq2] =
-				get_bishop_attacks_for_init(sq1, 0) & get_bishop_attacks_for_init(sq2, 0)
+				//gk additional parentheses
+				(get_bishop_attacks_for_init(sq1, 0) & get_bishop_attacks_for_init(sq2, 0))
 				| SQUARE_BB[sq1] | SQUARE_BB[sq2];
 		}
 }
