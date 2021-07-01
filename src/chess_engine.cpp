@@ -4,6 +4,7 @@
 #include "position.h"
 #include "types.h"
 
+using namespace surge;
 
 //Computes the perft of the position for a given depth, using bulk-counting
 //According to the https://www.chessprogramming.org/Perft site:

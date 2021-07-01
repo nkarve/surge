@@ -2,6 +2,8 @@
 
 #include "types.h"
 
+namespace surge {
+
 extern const Bitboard KING_ATTACKS[NSQUARES];
 extern const Bitboard KNIGHT_ATTACKS[NSQUARES];
 extern const Bitboard WHITE_PAWN_ATTACKS[NSQUARES];
@@ -83,3 +85,5 @@ template<Color C>
 constexpr Bitboard pawn_attacks(Square s) {
 	return PAWN_ATTACKS[C][s];
 }
+
+} // namespace surge

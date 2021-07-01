@@ -2,6 +2,8 @@
 #include "tables.h"
 #include <sstream>
 
+namespace surge {
+
 //Zobrist keys for each piece and each square
 //Used to incrementally update the hash key of a position
 uint64_t zobrist::zobrist_table[NPIECES][NSQUARES];
@@ -126,4 +128,4 @@ void Position::move_piece_quiet(Square from, Square to) {
 	board[from] = NO_PIECE;
 }
 
-
+} // namespace surge
