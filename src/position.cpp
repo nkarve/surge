@@ -109,6 +109,7 @@ void Position::move_piece(Square from, Square to) {
 	hash ^= zobrist::zobrist_table[board[from]][from] ^ zobrist::zobrist_table[board[from]][to]
 		^ zobrist::zobrist_table[board[to]][to];
 	Bitboard mask = SQUARE_BB[from] | SQUARE_BB[to];
+	piece_bb[NO_PIECE] = SQUARE_BB[from] | piece_bb[NO_PIECE]& ~SQUARE_BB[to];
 	piece_bb[board[from]] ^= mask;
 	piece_bb[board[to]] &= ~mask;
 	board[to] = board[from];
@@ -118,7 +119,9 @@ void Position::move_piece(Square from, Square to) {
 //Moves a piece to an empty square. Note that it is an error if the <to> square contains a piece
 void Position::move_piece_quiet(Square from, Square to) {
 	hash ^= zobrist::zobrist_table[board[from]][from] ^ zobrist::zobrist_table[board[from]][to];
-	piece_bb[board[from]] ^= (SQUARE_BB[from] | SQUARE_BB[to]);
+	Bitboard mask = SQUARE_BB[from] | SQUARE_BB[to];
+	piece_bb[board[from]] ^= mask;
+	piece_bb[NO_PIECE] ^= mask;
 	board[to] = board[from];
 	board[from] = NO_PIECE;
 }
