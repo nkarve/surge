@@ -89,6 +89,7 @@ public:
 		hash(0), pinned(0), checkers(0) {
 		
 		//Sets all squares on the board as empty
+		piece_bb[NO_PIECE] =~piece_bb[NO_PIECE];
 		for (int i = 0; i < 64; i++) board[i] = NO_PIECE;
 		history[0] = UndoInfo();
 	}
@@ -98,6 +99,7 @@ public:
 	inline void put_piece(Piece pc, Square s) {
 		board[s] = pc;
 		piece_bb[pc] |= SQUARE_BB[s];
+		piece_bb[NO_PIECE] &= ~SQUARE_BB[s];
 		hash ^= zobrist::zobrist_table[pc][s];
 	}
 
@@ -105,6 +107,7 @@ public:
 	inline void remove_piece(Square s) {
 		hash ^= zobrist::zobrist_table[board[s]][s];
 		piece_bb[board[s]] &= ~SQUARE_BB[s];
+		piece_bb[NO_PIECE] |= SQUARE_BB[s];
 		board[s] = NO_PIECE;
 	}
 
@@ -369,7 +372,7 @@ Move* Position::generate_legals(Move* list) {
 
 	const Bitboard us_bb = all_pieces<Us>();
 	const Bitboard them_bb = all_pieces<Them>();
-	const Bitboard all = us_bb | them_bb;
+	const Bitboard all = ~piece_bb[NO_PIECE];
 
 	const Square our_king = bsf(bitboard_of(Us, KING));
 	const Square their_king = bsf(bitboard_of(Them, KING));
