@@ -467,8 +467,16 @@ Move* Position::generate_legals(Move* list) {
 			//If the checker is either a pawn or a knight, the only legal moves are to capture
 			//the checker. Only non-pinned pieces can capture it
 			b1 = attackers_from<Us>(checker_square, all) & not_pinned;
-			while (b1) *list++ = Move(pop_lsb(&b1), checker_square, CAPTURE);
-
+			while (b1) {
+				s = pop_lsb(&b1);
+				if (type_of(board[s]) == PAWN && rank_of(s) == relative_rank<Us>(RANK7)) {
+					*list++ = Move(s, checker_square, PC_QUEEN);
+					*list++ = Move(s, checker_square, PC_ROOK);
+					*list++ = Move(s, checker_square, PC_BISHOP);
+					*list++ = Move(s, checker_square, PC_KNIGHT);
+				}
+				else *list++ = Move(s, checker_square, CAPTURE);
+			}
 			return list;
 		default:
 			//We must capture the checking piece
