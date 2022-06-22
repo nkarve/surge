@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 
+namespace surge {
+
 const size_t NCOLORS = 2;
 enum Color : int {
 	WHITE, BLACK
@@ -104,13 +106,17 @@ extern const Bitboard k2;
 extern const Bitboard k4;
 extern const Bitboard kf;
 
-extern inline int pop_count(Bitboard x);
-extern inline int sparse_pop_count(Bitboard x);
-extern inline Square pop_lsb(Bitboard* b);
+//gk extern inline int pop_count(Bitboard x);
+extern int pop_count(Bitboard x);
+//gk extern inline int sparse_pop_count(Bitboard x);
+extern int sparse_pop_count(Bitboard x);
+//gk extern inline Square pop_lsb(Bitboard* b);
+extern Square pop_lsb(Bitboard* b);
 
 extern const int DEBRUIJN64[64];
 extern const Bitboard MAGIC;
-extern constexpr Square bsf(Bitboard b);
+//gk extern constexpr Square bsf(Bitboard b);
+extern Square bsf(Bitboard b);
 
 constexpr Rank rank_of(Square s) { return Rank(s >> 3); }
 constexpr File file_of(Square s) { return File(s & 0b111); }
@@ -269,3 +275,5 @@ constexpr Bitboard ooo_blockers_mask() {
 }
 	
 template<Color C> constexpr Bitboard ignore_ooo_danger() { return C == WHITE ? 0x2 : 0x200000000000000; }
+
+} // namespace surge

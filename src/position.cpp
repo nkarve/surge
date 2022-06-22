@@ -2,6 +2,8 @@
 #include "tables.h"
 #include <sstream>
 
+namespace surge {
+
 //Zobrist keys for each piece and each square
 //Used to incrementally update the hash key of a position
 uint64_t zobrist::zobrist_table[NPIECES][NSQUARES];
@@ -9,8 +11,11 @@ uint64_t zobrist::zobrist_table[NPIECES][NSQUARES];
 //Initializes the zobrist table with random 64-bit numbers
 void zobrist::initialise_zobrist_keys() {
 	PRNG rng(70026072);
-	for (int i = 0; i < NPIECES; i++)
-		for (int j = 0; j < NSQUARES; j++)
+	//gk comparison of integer expressions of different signedness
+	//gk for (int i = 0; i < NPIECES; i++)
+	//gk    for (int j = 0; j < NSQUARES; j++)
+	for (size_t i = 0; i < NPIECES; i++)
+		for (size_t j = 0; j < NSQUARES; j++)
 			zobrist::zobrist_table[i][j] = rng.rand<uint64_t>();
 }
 
@@ -123,4 +128,4 @@ void Position::move_piece_quiet(Square from, Square to) {
 	board[from] = NO_PIECE;
 }
 
-
+} // namespace surge

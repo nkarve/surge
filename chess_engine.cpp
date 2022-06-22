@@ -4,7 +4,6 @@
 #include "position.h"
 #include "types.h"
 
-using namespace surge;
 
 //Computes the perft of the position for a given depth, using bulk-counting
 //According to the https://www.chessprogramming.org/Perft site:
@@ -51,7 +50,8 @@ void perftdiv(Position& p, unsigned int depth) {
 
 void test_perft() {
 	Position p;
-	Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPP1PPP/RNBQKBNR w KQkq -", p);
+	//gk Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPP1PPP/RNBQKBNR w KQkq -", p);
+	Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -", p);
 	std::cout << p;
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();

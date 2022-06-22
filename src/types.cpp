@@ -1,6 +1,8 @@
 #include "types.h"
 #include <iostream>
 
+namespace surge { 
+
 //Lookup tables of square names in algebraic chess notation
 const char* SQSTR[65] = {
 	"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1",
@@ -83,7 +85,8 @@ const Bitboard k4 = 0x0f0f0f0f0f0f0f0f;
 const Bitboard kf = 0x0101010101010101;
 
 //Returns number of set bits in the bitboard
-inline int pop_count(Bitboard x) {
+//gk inline int pop_count(Bitboard x) {
+int pop_count(Bitboard x) {
 	x = x - ((x >> 1) & k1);
 	x = (x & k2) + ((x >> 2) & k2);
 	x = (x + (x >> 4)) & k4;
@@ -92,7 +95,8 @@ inline int pop_count(Bitboard x) {
 }
 
 //Returns number of set bits in the bitboard. Faster than pop_count(x) when the bitboard has few set bits
-inline int sparse_pop_count(Bitboard x) {
+//gk inline int sparse_pop_count(Bitboard x) {
+int sparse_pop_count(Bitboard x) {
 	int count = 0;
 	while (x) {
 		count++;
@@ -101,7 +105,8 @@ inline int sparse_pop_count(Bitboard x) {
 	return count;
 }
 
-const int DEBRUIJN64[64] = {
+//gk const int DEBRUIJN64[64] = {
+constexpr int DEBRUIJN64[64] = {
 	0, 47,  1, 56, 48, 27,  2, 60,
    57, 49, 41, 37, 28, 16,  3, 61,
    54, 58, 35, 52, 50, 42, 21, 44,
@@ -114,16 +119,19 @@ const int DEBRUIJN64[64] = {
 
 const Bitboard MAGIC = 0x03f79d71b4cb0a89;
 
+//Returns the index of the least significant bit in the bitboard
+//constexpr Square bsf(Bitboard b) {
+Square bsf(Bitboard b) {
+	return Square(DEBRUIJN64[MAGIC * (b ^ (b - 1)) >> 58]);
+}
+
 //Returns the index of the least significant bit in the bitboard, and removes the bit from the bitboard
-inline Square pop_lsb(Bitboard* b) {
+//gk should be taken to the include file when declared "inline"
+//gk inline Square pop_lsb(Bitboard* b) {
+Square pop_lsb(Bitboard* b) {
 	int lsb = bsf(*b);
 	*b &= *b - 1;
 	return Square(lsb);
-}
-
-//Returns the index of the least significant bit in the bitboard
-constexpr Square bsf(Bitboard b) {
-	return Square(DEBRUIJN64[MAGIC * (b ^ (b - 1)) >> 58]);
 }
 
 //Returns the representation of the move type in algebraic chess notation. (capture) is used for debugging
@@ -139,3 +147,4 @@ std::ostream& operator<<(std::ostream& os, const Move& m) {
 	return os;
 }
 
+} // namespace surge
