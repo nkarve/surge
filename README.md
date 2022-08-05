@@ -24,7 +24,7 @@ int main() {
     Position::set("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -", p);
     std::cout << p; 
   
-    MoveList<WHITE> list(p)
+    MoveList<WHITE> list(p);
   
     for(Move m : list) {
         std::cout << m << "\n";

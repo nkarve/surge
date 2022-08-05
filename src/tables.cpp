@@ -1,6 +1,7 @@
 #include "tables.h"
 #include "types.h"
 #include <iostream>
+#include <cstring>
 
 //All piece tables are generated from a program written in Java
 
@@ -157,7 +158,7 @@ void initialise_rook_attacks() {
 }
 
 //Returns the attacks bitboard for a rook at a given square, using the magic lookup table
-constexpr Bitboard get_rook_attacks(Square square, Bitboard occ) {
+/*constexpr */Bitboard get_rook_attacks(Square square, Bitboard occ) {
 	return ROOK_ATTACKS[square][((occ & ROOK_ATTACK_MASKS[square]) * ROOK_MAGICS[square])
 		>> ROOK_ATTACK_SHIFTS[square]];
 }
@@ -223,7 +224,7 @@ void initialise_bishop_attacks() {
 }
 
 //Returns the attacks bitboard for a bishop at a given square, using the magic lookup table
-constexpr Bitboard get_bishop_attacks(Square square, Bitboard occ) {
+/*constexpr*/ Bitboard get_bishop_attacks(Square square, Bitboard occ) {
 	return BISHOP_ATTACKS[square][((occ & BISHOP_ATTACK_MASKS[square]) * BISHOP_MAGICS[square])
 		>> BISHOP_ATTACK_SHIFTS[square]];
 }
