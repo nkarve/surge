@@ -532,7 +532,7 @@ Move* Position::generate_legals(Move* list) {
 		//2. No piece is attacking between the the rook and the king
 		//3. The king is not in check
 		if (!((history[game_ply].entry & oo_mask<Us>()) | ((all | danger) & oo_blockers_mask<Us>())))
-			*list++ = Us == WHITE ? Move(e1, h1, OO) : Move(e8, h8, OO);
+			*list++ = Us == WHITE ? Move(e1, g1, OO) : Move(e8, g8, OO);
 		if (!((history[game_ply].entry & ooo_mask<Us>()) |
 			((all | (danger & ~ignore_ooo_danger<Us>())) & ooo_blockers_mask<Us>())))
 			*list++ = Us == WHITE ? Move(e1, c1, OOO) : Move(e8, c8, OOO);
